@@ -98,7 +98,7 @@ const ComicForm = ({ onGenerateComic }) => {
               } }}
               onClick={()=>handleAddPanel(text)}
             >
-              Get The Panel
+              Add Panel
             </Button>
           </Grid>
         </Grid>
