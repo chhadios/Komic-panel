@@ -5,110 +5,163 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-
+import LinearProgress from "@mui/material/LinearProgress";
+import useMediaQuery from '@mui/material/useMediaQuery';
+import HorizontalStack from "./horizontalContainer";
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
-//   padding: theme.spacing(1),
+  //   padding: theme.spacing(1),
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
 
-
 const ComicForm = ({ onGenerateComic }) => {
+    const matches = useMediaQuery('(min-width:1200px)');
   const [text, setText] = useState("");
   const [textArray, setTextArray] = useState([]);
+  const [DisplayTextArray, setDisplayTextArray] = useState([]);
+  const [showButton, setShowButton] = useState(true);
 
   const handleInputChange = (e) => {
     setText(e.target.value);
   };
 
-  const handleGenerateComic = async (e) => {
-    e.preventDefault();
-    console.log(text)
-    textArray.map((text)=>{
-        query({ inputs: text }).then((response) => {
-          onGenerateComic(response);
-        });
-    })
-  };
-  const handleAddPanel = async (e) => {
-    setTextArray([...textArray, text])
+  const handleAddPanel = async (data) => {
+    textArray.push({
+      text: text,
+      status: "processing",
+    });
+    setShowButton(false)
+    query({ inputs: data }).then((response) => {
+        setShowButton(true)
+      onGenerateComic(response);
+    });
     setText("");
   };
 
   async function query(data) {
-    const response = await fetch(
-      "https://xdwvg9no7pefghrn.us-east-1.aws.endpoints.huggingface.cloud",
-      {
-        headers: {
-          Accept: "image/png",
-          Authorization:
-            "Bearer VknySbLLTUjbxXAXCjyfaFIPwUTCeRXbFSOjwRiCxsxFyhbnGjSFalPKrpvvDAaPVzWEevPljilLVDBiTzfIbWFdxOkYJxnOPoHhkkVGzAknaOulWggusSFewzpqsNWM",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
-    const result = await response.blob();
-    return result;
+    try {
+      const response = await fetch(
+        "https://xdwvg9no7pefghrn.us-east-1.aws.endpoints.huggingface.cloud",
+        {
+          headers: {
+            Accept: "image/png",
+            Authorization:
+              "Bearer VknySbLLTUjbxXAXCjyfaFIPwUTCeRXbFSOjwRiCxsxFyhbnGjSFalPKrpvvDAaPVzWEevPljilLVDBiTzfIbWFdxOkYJxnOPoHhkkVGzAknaOulWggusSFewzpqsNWM",
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      )
+      let index = textArray.findIndex((x) => x.text === data.inputs);
+      console.log(index)
+      console.log(data.inputs)
+      let temp=await setTextArray(
+        textArray.map((item) =>
+          item.text === data.inputs ? { ...item, status: "success" } : item
+        )
+      );
+      const result = await response.blob();
+      return result;
+    } catch (error) {
+        setTextArray(
+            textArray.map((item) =>
+              item.text === data.inputs ? { ...item, status: "error" } : item
+            )
+          );
+      console.error(error);
+    }
   }
-
+  console.log(textArray)
   return (
     <>
-    <form onSubmit={handleGenerateComic}>
-      <TextField
-        sx={{ width: "100%",borderRadius:"5px", marginBottom: "10px",backgroundColor:"whitesmoke" }}
-        id="outlined-basic"
-        variant="outlined"
-        value={text}
-        onChange={handleInputChange}
-        placeholder="Enter text for each panel"
-      />
-      <Grid container  >
-        <Grid
-          item
-          xs={12}
-        >
-          <Button variant="contained"  fullWidth sx={{marginBottom:"5px",background:"#CA3E47"}}
-          onClick={handleAddPanel}>
-            Add new panel text
-          </Button>
+      <form >
+        <TextField
+          sx={{
+            width: "100%",
+            borderRadius: "5px",
+            marginBottom: "10px",
+            backgroundColor: "whitesmoke",
+            fontFamily:"Poppins"
+          }}
+          id="outlined-basic"
+          variant="outlined"
+          value={text}
+          onChange={handleInputChange}
+          placeholder="Enter text for each panel"
+        />
+        <Grid container>
+          <Grid item xs={12}>
+            <Button
+            disabled={!showButton}
+              variant="contained"
+              fullWidth
+              sx={{ marginBottom: "5px",
+              fontSize:"18px",
+               background: "#CA3E47",fontFamily:"Poppins",textTransform:"none",fontWeight:"bold",
+               "&.Mui-disabled": {
+                background: "rgb(33, 33, 33)",
+                color: "grey"
+              } }}
+              onClick={()=>handleAddPanel(text)}
+            >
+              Get The Panel
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" type="submit" fullWidth sx={{marginBottom:"5px",backgroundColor:"#CA3E47",
-          "&.Mui-disabled": {
-            background: "rgb(33, 33, 33)",
-            color: "grey"
-          }}} 
-          disabled={textArray.length?false:true}>
-            Generate Comic
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-    <Box>
-        {textArray.length?<Grid container sx={{marginTop:"10px"}}>
-            {textArray.map((panelText,index)=>(
-                // <Grid Item sx={{border:"0.5px solid grey",padding:"2px"}} xs={12}>
-                //     {panelText}
-                // </Grid>
-                <Button variant="outlined"
-                 fullWidth 
-                 disabled
-                   sx={{marginBottom:"5px",
-                   borderRadius:"50px",
-                   justifyContent:"left",
-                   textTransform: 'none',
-                "&.Mui-disabled": {
-                    background: "rgb(33, 33, 33)",
-                    color: "white"
-                  }}}>{panelText}</Button>
+      </form>
+      
+      <Box>
+        {textArray.length ? (
+          <Grid container sx={{ marginTop: "10px",width:"99%"}}>
+            {matches?
+            <>
+            {textArray.map((panelText, index) => (
+              <Box
+                sx={{
+                  background: panelText.status==="error"?"#CA3E47":"#525252",
+                  padding: "3px",
+                  paddingLeft: "10%",
+                  paddingTop: "2.5%",
+                  color: "white",
+                  width: "100%",
+                  height: "100%",
+                  marginBottom: "5px",
+                  borderRadius: "50px",
+                  boxShadow:
+                    "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)",
+                    fontFamily:"Poppins"
+                }}
+              >
+                {panelText.status==="error"?<>Error</>:panelText.text}
+                {panelText.status === "processing" ? (
+                  <LinearProgress
+                    value={50}
+                    sx={{
+                      width: "90%",
+                      "&.MuiLinearProgress-colorPrimary": {
+                        backgroundColor: "#313131", // This changes the color of the track
+                      },
+                      "& .MuiLinearProgress-bar": {
+                        backgroundColor: "#CA3E47", // This changes the color of the progress bar
+                      },
+                    }}
+                  />
+                ) : (
+                  <></>
+                )}
+              </Box>
             ))}
-        </Grid>:<>
-        </>}
-    </Box>
+            </>:
+            <HorizontalStack  textArray={textArray}/>
+            }
+          </Grid>
+        ) : (
+          <></>
+        )}
+      </Box>
     </>
   );
 };

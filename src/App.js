@@ -5,6 +5,8 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import Header from './components/header';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -15,6 +17,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const App = () => {
+  const matches = useMediaQuery('(min-width:1200px)');
   const [comicPanels, setComicPanels] = useState();
 
   const handleGenerateComic = (panel) => {
@@ -22,20 +25,24 @@ const App = () => {
   };
 
   return (
+    <Box sx={{height:"100vh"}}>
+    <Header/>
     <Box className='boxContainer' sx={{ 
-      width:"98.82vw",
-      height: "97.5vh",
       margin:"-10px", 
-      backgroundColor: "black",
-      padding: "10px"}}>
+      backgroundColor: "#313131",
+      padding: "10px",
+      }}>
+
       <Grid container  >
-        <Grid item xs={5} md={2.5} sx={{ padding: "10px" }}>
+        <Grid item className='displayContainer' xs={12} md={matches?2.5:12}
+         sx={{ padding: "10px",height:matches?"none":"100%"}}>
           <ComicForm onGenerateComic={handleGenerateComic} />
         </Grid>
-        <Grid item className='displayContainer' xs={7} md={9.5} >
+        <Grid item className='displayContainer' xs={12} md={matches?9.5:12} >
           <ComicDisplay comicPanels={comicPanels} />
         </Grid>
       </Grid>
+    </Box>
     </Box>
   );
 };
