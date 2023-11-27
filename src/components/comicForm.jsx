@@ -2,25 +2,16 @@ import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import LinearProgress from "@mui/material/LinearProgress";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import HorizontalStack from "./horizontalContainer";
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-  ...theme.typography.body2,
-  //   padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+
 
 const ComicForm = ({ onGenerateComic }) => {
     const matches = useMediaQuery('(min-width:1200px)');
   const [text, setText] = useState("");
   const [textArray, setTextArray] = useState([]);
-  const [DisplayTextArray, setDisplayTextArray] = useState([]);
   const [showButton, setShowButton] = useState(true);
 
   const handleInputChange = (e) => {
@@ -58,7 +49,7 @@ const ComicForm = ({ onGenerateComic }) => {
       let index = textArray.findIndex((x) => x.text === data.inputs);
       console.log(index)
       console.log(data.inputs)
-      let temp=await setTextArray(
+      setTextArray(
         textArray.map((item) =>
           item.text === data.inputs ? { ...item, status: "success" } : item
         )
@@ -120,6 +111,7 @@ const ComicForm = ({ onGenerateComic }) => {
             <>
             {textArray.map((panelText, index) => (
               <Box
+              key={index}
                 sx={{
                   background: panelText.status==="error"?"#CA3E47":"#525252",
                   padding: "3px",

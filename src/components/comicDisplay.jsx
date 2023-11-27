@@ -4,7 +4,7 @@ import PhotoAlbum from "react-photo-album";
 const ComicDisplay = ({ comicPanels }) => {
     const [displayImg,setDisplayImg]=useState([]);
     useEffect(() => {
-        if(comicPanels!=undefined){
+        if(comicPanels!==undefined){
             var randomnumber = Math.floor(Math.random() * (6 - 2 + 1)) + 2;
             let imageURL=URL.createObjectURL(comicPanels);
             let temp={
