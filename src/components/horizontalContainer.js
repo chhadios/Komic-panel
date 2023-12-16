@@ -18,11 +18,11 @@ const HorizontalScrollGrid = ({ data }) => {
                 <Box
                     sx={{
                         marginRight: "5px",
-                        background: "#525252",
+                        background: panelText.status=== "error" ?"#CA3E47":"#525252",
                         padding: "3px",
                         paddingLeft: "2%",
                         paddingTop: "1%",
-                        color: "white",
+                        color:"white",
                         minWidth: "120px",
                         maxWidth: "300px",
                         minHeight: "30px",
@@ -34,7 +34,7 @@ const HorizontalScrollGrid = ({ data }) => {
                         fontFamily: "Poppins"
                     }}
                 >
-                    {panelText.text}
+                    {panelText.status==="error"?<>Error</>:panelText.text}
                     {panelText.status === "processing" ? (
                         <LinearProgress
                             value={50}

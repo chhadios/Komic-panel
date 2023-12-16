@@ -46,9 +46,6 @@ const ComicForm = ({ onGenerateComic }) => {
           body: JSON.stringify(data),
         }
       )
-      let index = textArray.findIndex((x) => x.text === data.inputs);
-      console.log(index)
-      console.log(data.inputs)
       setTextArray(
         textArray.map((item) =>
           item.text === data.inputs ? { ...item, status: "success" } : item
@@ -65,7 +62,6 @@ const ComicForm = ({ onGenerateComic }) => {
       console.error(error);
     }
   }
-  console.log(textArray)
   return (
     <>
       <form >
@@ -127,6 +123,7 @@ const ComicForm = ({ onGenerateComic }) => {
                     fontFamily:"Poppins"
                 }}
               >
+                
                 {panelText.status==="error"?<>Error</>:panelText.text}
                 {panelText.status === "processing" ? (
                   <LinearProgress
