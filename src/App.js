@@ -7,9 +7,6 @@ import Header from './components/header';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const App = () => {
-  // useEffect(()=>{
-  //   console.log("hello");
-  // },[])
   const matches = useMediaQuery('(min-width:1200px)');
   const [comicPanels, setComicPanels] = useState();
 
